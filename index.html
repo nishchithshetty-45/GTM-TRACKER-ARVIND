@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Campaign Tracker — IPL Outreach HQ</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d0d0d;
+    --bg2: #161616;
+    --bg3: #1e1e1e;
+    --bg4: #252525;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #f0f0f0;
+    --text2: #888;
+    --text3: #555;
+    --accent: #00e5a0;
+    --accent-dim: rgba(0,229,160,0.1);
+    --blue: #378ADD;
+    --amber: #EF9F27;
+    --red: #E24B4A;
+    --green: #1D9E75;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 14px;
+  }
+
+  /* Layout */
+  .layout { display: flex; min-height: 100vh; }
+
+  /* Sidebar */
+  .sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    background: var(--bg2);
+    border-right: 0.5px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 0;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+  }
+  .sidebar-logo {
+    padding: 0 1.25rem 1.5rem;
+    border-bottom: 0.5px solid var(--border);
+    margin-bottom: 1.25rem;
+  }
+  .sidebar-logo .wordmark {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 3px;
+  }
+  .sidebar-logo .product {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .sidebar-section {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding: 0 1.25rem;
+    margin-bottom: .6rem;
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 1.25rem;
+    font-size: 13px;
+    color: var(--text2);
+    cursor: pointer;
+    border-left: 2px solid transparent;
+    transition: all .15s;
+    text-decoration: none;
+  }
+  .nav-item:hover { color: var(--text); background: var(--bg3); }
+  .nav-item.active { color: var(--accent); border-left-color: var(--accent); background: var(--accent-dim); font-weight: 500; }
+  .nav-item i { font-size: 16px; }
+  .nav-badge {
+    margin-left: auto;
+    background: var(--bg4);
+    color: var(--text3);
+    font-size: 10px;
+    padding: 1px 7px;
+    border-radius: 20px;
+  }
+  .nav-badge.active-badge { background: var(--accent-dim); color: var(--accent); }
+  .sidebar-footer {
+    margin-top: auto;
+    padding: 1rem 1.25rem 0;
+    border-top: 0.5px solid var(--border);
+    font-size: 11px;
+    color: var(--text3);
+  }
+
+  /* Main content */
+  .main { margin-left: 220px; padding: 2rem 2.5rem; flex: 1; }
+
+  /* Top bar */
+  .topbar {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+  }
+  .page-title { font-size: 22px; font-weight: 600; color: var(--text); }
+  .page-sub { font-size: 13px; color: var(--text3); margin-top: 3px; }
+  .topbar-actions { display: flex; gap: 8px; align-items: center; }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all .15s;
+  }
+  .btn-ghost {
+    background: transparent;
+    border: 0.5px solid var(--border2);
+    color: var(--text2);
+  }
+  .btn-ghost:hover { background: var(--bg3); color: var(--text); }
+  .btn-accent {
+    background: var(--accent);
+    color: #000;
+  }
+  .btn-accent:hover { opacity: .88; }
+
+  /* Summary cards */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 2rem;
+  }
+  .summary-card {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.25rem;
+  }
+  .summary-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 8px;
+  }
+  .summary-value {
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1;
+  }
+  .summary-sub {
+    font-size: 12px;
+    color: var(--text3);
+    margin-top: 5px;
+  }
+  .summary-delta {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11px;
+    margin-top: 4px;
+  }
+  .delta-up { color: var(--green); }
+  .delta-warn { color: var(--amber); }
+
+  /* Tab bar */
+  .tab-bar {
+    display: flex;
+    gap: 0;
+    border-bottom: 0.5px solid var(--border);
+    margin-bottom: 1.25rem;
+  }
+  .tab {
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 18px;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    color: var(--text3);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all .15s;
+  }
+  .tab:hover { color: var(--text2); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* Table */
+  .table-card {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 2rem;
+  }
+  .table-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .table-count { font-size: 13px; color: var(--text3); }
+  .search-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg3);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 6px 10px;
+    font-size: 13px;
+    color: var(--text2);
+  }
+  .search-box input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-size: 13px;
+    width: 180px;
+  }
+  .search-box input::placeholder { color: var(--text3); }
+
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 0.5px solid var(--border);
+    white-space: nowrap;
+    background: var(--bg2);
+  }
+  thead th:not(:first-child):not(:nth-child(2)) { text-align: right; }
+  tbody tr {
+    border-bottom: 0.5px solid var(--border);
+    transition: background .1s;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--bg3); }
+  td {
+    padding: 11px 14px;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+  td:not(:first-child):not(:nth-child(2)) { text-align: right; }
+
+  .campaign-name {
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--text);
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .campaign-meta { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 40px;
+  }
+  .badge-active { background: rgba(0,229,160,.12); color: var(--accent); }
+  .badge-ended { background: var(--bg4); color: var(--text3); }
+
+  .val { font-size: 13px; }
+  .val-good { color: var(--green); font-weight: 500; }
+  .val-great { color: var(--accent); font-weight: 500; }
+  .val-warn { color: var(--amber); }
+  .val-muted { color: var(--text2); }
+  .val-dim { color: var(--text3); }
+
+  .row-actions { display: flex; gap: 4px; justify-content: flex-end; }
+  .icon-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--text3);
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    transition: all .12s;
+  }
+  .icon-btn:hover { color: var(--text); background: var(--bg4); }
+
+  /* Chart section */
+  .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 2rem; }
+  .chart-card {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+  }
+  .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+  .chart-title { font-size: 13px; font-weight: 600; color: var(--text); }
+  .chart-sub { font-size: 11px; color: var(--text3); }
+  .legend { display: flex; gap: 14px; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text3); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+
+  /* Modal */
+  .modal-bg {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.7);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(2px);
+  }
+  .modal-bg.open { display: flex; }
+  .modal {
+    background: var(--bg2);
+    border: 0.5px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 1.75rem;
+    width: 460px;
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+  .modal-title { font-size: 16px; font-weight: 600; color: var(--text); }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--text3);
+  }
+  .form-input {
+    background: var(--bg3);
+    border: 0.5px solid var(--border2);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    font-size: 13px;
+    color: var(--text);
+    outline: none;
+    width: 100%;
+    transition: border .15s;
+  }
+  .form-input:focus { border-color: var(--accent); }
+  .form-input option { background: var(--bg3); }
+  .modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 1.5rem; }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text3);
+  }
+  .empty-state i { font-size: 32px; margin-bottom: 12px; opacity: .4; }
+  .empty-state p { font-size: 13px; }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; padding: 1.25rem; }
+    .summary-grid { grid-template-columns: repeat(2, 1fr); }
+    .chart-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="wordmark">IPL · Outreach HQ</div>
+      <div class="product">Campaign Tracker</div>
+    </div>
+    <div style="margin-bottom:.75rem">
+      <div class="sidebar-section">Channels</div>
+      <a class="nav-item active" onclick="setView('email')">
+        <i class="ti ti-mail"></i> Email
+        <span class="nav-badge active-badge" id="email-count">6</span>
+      </a>
+      <a class="nav-item" onclick="setView('linkedin')">
+        <i class="ti ti-brand-linkedin"></i> LinkedIn
+        <span class="nav-badge" id="linkedin-count">0</span>
+      </a>
+      <a class="nav-item" onclick="setView('whatsapp')">
+        <i class="ti ti-brand-whatsapp"></i> WhatsApp
+        <span class="nav-badge" id="whatsapp-count">0</span>
+      </a>
+    </div>
+    <div style="margin-bottom:.75rem; margin-top:.5rem">
+      <div class="sidebar-section">Manage</div>
+      <a class="nav-item" onclick="openModal()">
+        <i class="ti ti-plus"></i> Add campaign
+      </a>
+      <a class="nav-item" onclick="exportCSV()">
+        <i class="ti ti-download"></i> Export CSV
+      </a>
+    </div>
+    <div class="sidebar-footer">
+      <div id="save-status" style="display:flex;align-items:center;gap:6px">
+        <span style="width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block"></span>
+        Saved to browser
+      </div>
+      <div style="margin-top:4px" id="campaign-count-footer">6 campaigns · persistent</div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <div class="page-title" id="page-title">Email Campaigns</div>
+        <div class="page-sub" id="page-sub">open rates · clicks · replies · unsubscribes</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-ghost" onclick="exportCSV()"><i class="ti ti-download"></i> CSV</button>
+        <button class="btn btn-accent" onclick="openModal()"><i class="ti ti-plus"></i> Add campaign</button>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="summary-grid" id="summary"></div>
+
+    <!-- Charts -->
+    <div class="chart-grid">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Open % vs CTR</div>
+            <div class="chart-sub">by campaign</div>
+          </div>
+          <div class="legend">
+            <span class="legend-item"><span class="legend-dot" style="background:#00e5a0"></span>Open %</span>
+            <span class="legend-item"><span class="legend-dot" style="background:#378ADD"></span>CTR</span>
+          </div>
+        </div>
+        <div style="position:relative;height:200px">
+          <canvas id="chart1" role="img" aria-label="Open rate vs CTR by campaign"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Conversions vs Unsubscribes</div>
+            <div class="chart-sub">by campaign</div>
+          </div>
+          <div class="legend">
+            <span class="legend-item"><span class="legend-dot" style="background:#1D9E75"></span>Conv</span>
+            <span class="legend-item"><span class="legend-dot" style="background:#E24B4A"></span>Unsub</span>
+          </div>
+        </div>
+        <div style="position:relative;height:200px">
+          <canvas id="chart2" role="img" aria-label="Conversions vs unsubscribes by campaign"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="tab-bar">
+      <button class="tab active" onclick="filterTab(this,'all')">All</button>
+      <button class="tab" onclick="filterTab(this,'active')">Active</button>
+      <button class="tab" onclick="filterTab(this,'ended')">Ended</button>
+    </div>
+
+    <div class="table-card">
+      <div class="table-toolbar">
+        <span class="table-count" id="table-count">6 campaigns</span>
+        <div class="search-box">
+          <i class="ti ti-search" style="font-size:14px"></i>
+          <input type="text" id="search-input" placeholder="Search campaigns…" oninput="render()" />
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:200px">Campaign</th>
+              <th style="width:80px">Status</th>
+              <th>Sent</th>
+              <th>Delivered</th>
+              <th>Opens</th>
+              <th>Open %</th>
+              <th>Clicks</th>
+              <th>CTR</th>
+              <th>Replies</th>
+              <th>Reply %</th>
+              <th>Conv.</th>
+              <th>Unsub</th>
+              <th style="width:60px"></th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Modal -->
+<div class="modal-bg" id="modal" onclick="handleModalBgClick(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title">Add campaign</span>
+      <button class="icon-btn" onclick="closeModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group full">
+        <label class="form-label">Campaign name</label>
+        <input class="form-input" type="text" id="f-name" placeholder="e.g. Leadership Circle – June 20" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <select class="form-input" id="f-status">
+          <option value="active">Active</option>
+          <option value="ended">Ended</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Channel</label>
+        <select class="form-input" id="f-channel">
+          <option value="email">Email</option>
+          <option value="linkedin">LinkedIn</option>
+          <option value="whatsapp">WhatsApp</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Sent</label>
+        <input class="form-input" type="number" id="f-sent" placeholder="0" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Delivered</label>
+        <input class="form-input" type="number" id="f-delivered" placeholder="0" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Opens</label>
+        <input class="form-input" type="number" id="f-opens" placeholder="0" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Clicks</label>
+        <input class="form-input" type="number" id="f-clicks" placeholder="0" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Replies</label>
+        <input class="form-input" type="number" id="f-replies" placeholder="0" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Conversions</label>
+        <input class="form-input" type="number" id="f-conv" placeholder="0" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Unsubscribes</label>
+        <input class="form-input" type="number" id="f-unsub" placeholder="0" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-accent" onclick="saveCampaign()">Save campaign</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+const STORAGE_KEY = 'ipl_campaigns_v2';
+let currentView = 'email';
+let currentTab = 'all';
+let editId = null;
+let chart1Inst = null;
+let chart2Inst = null;
+
+const DEFAULT_CAMPAIGNS = [
+  {id:1,name:"EMBA Campus – Visit",channel:"email",status:"ended",sent:1000,delivered:970,opens:160,clicks:23,replies:1,conv:1,unsub:9},
+  {id:2,name:"EMBA Campus Invite",channel:"email",status:"active",sent:6600,delivered:2200,opens:1800,clicks:67,replies:4,conv:4,unsub:37},
+  {id:3,name:"Your network is prob… (1)",channel:"email",status:"ended",sent:488,delivered:424,opens:191,clicks:85,replies:8,conv:8,unsub:6},
+  {id:4,name:"Your network is prob… (2)",channel:"email",status:"ended",sent:430,delivered:370,opens:185,clicks:80,replies:2,conv:4,unsub:2},
+  {id:5,name:"Campus Connect – The…",channel:"email",status:"active",sent:340,delivered:325,opens:210,clicks:169,replies:2,conv:0,unsub:7},
+  {id:6,name:"One more look before…",channel:"email",status:"ended",sent:390,delivered:389,opens:377,clicks:371,replies:2,conv:0,unsub:0},
+];
+
+function load() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : DEFAULT_CAMPAIGNS;
+  } catch(e) { return DEFAULT_CAMPAIGNS; }
+}
+
+function save(campaigns) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(campaigns));
+  updateFooter(campaigns);
+}
+
+let campaigns = load();
+
+function updateFooter(c) {
+  document.getElementById('campaign-count-footer').textContent = `${c.length} campaigns · persistent`;
+  document.getElementById('email-count').textContent = c.filter(x=>x.channel==='email').length;
+  document.getElementById('linkedin-count').textContent = c.filter(x=>x.channel==='linkedin').length;
+  document.getElementById('whatsapp-count').textContent = c.filter(x=>x.channel==='whatsapp').length;
+}
+
+function pct(a, b) { return b > 0 ? ((a / b) * 100) : 0; }
+function fmtPct(a, b) { return pct(a,b).toFixed(1) + '%'; }
+function fmtNum(n) { return n >= 1000 ? (n/1000).toFixed(1)+'K' : n; }
+
+function filtered() {
+  const q = (document.getElementById('search-input')?.value || '').toLowerCase();
+  return campaigns.filter(c => {
+    if (c.channel !== currentView) return false;
+    if (currentTab !== 'all' && c.status !== currentTab) return false;
+    if (q && !c.name.toLowerCase().includes(q)) return false;
+    return true;
+  });
+}
+
+function setView(view) {
+  currentView = view;
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  const titles = { email: 'Email Campaigns', linkedin: 'LinkedIn Campaigns', whatsapp: 'WhatsApp Campaigns' };
+  document.getElementById('page-title').textContent = titles[view];
+  render();
+}
+
+function filterTab(el, tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  currentTab = tab;
+  render();
+}
+
+function renderSummary() {
+  const rows = filtered();
+  const totSent = rows.reduce((s,c)=>s+c.sent,0);
+  const totDel = rows.reduce((s,c)=>s+c.delivered,0);
+  const totOpens = rows.reduce((s,c)=>s+c.opens,0);
+  const totClicks = rows.reduce((s,c)=>s+c.clicks,0);
+  const totConv = rows.reduce((s,c)=>s+c.conv,0);
+  const totUnsub = rows.reduce((s,c)=>s+c.unsub,0);
+  const avgOpen = pct(totOpens, totDel).toFixed(1);
+  const avgCTR = pct(totClicks, totOpens).toFixed(1);
+
+  document.getElementById('summary').innerHTML = `
+    <div class="summary-card">
+      <div class="summary-label">Total sent</div>
+      <div class="summary-value">${fmtNum(totSent)}</div>
+      <div class="summary-sub">${rows.length} campaigns tracked</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">Avg open rate</div>
+      <div class="summary-value" style="color:var(--accent)">${avgOpen}%</div>
+      <div class="summary-sub">${totOpens.toLocaleString()} total opens</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">Avg CTR</div>
+      <div class="summary-value" style="color:var(--blue)">${avgCTR}%</div>
+      <div class="summary-sub">${totClicks.toLocaleString()} total clicks</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">Conversions</div>
+      <div class="summary-value" style="color:var(--green)">${totConv}</div>
+      <div class="summary-sub">${totUnsub} unsubscribes</div>
+    </div>
+  `;
+}
+
+function colorVal(val, goodThresh, greatThresh) {
+  if (val >= greatThresh) return 'val-great';
+  if (val >= goodThresh) return 'val-good';
+  if (val >= goodThresh / 2) return 'val-warn';
+  return 'val-muted';
+}
+
+function renderTable() {
+  const rows = filtered();
+  document.getElementById('table-count').textContent = `${rows.length} campaign${rows.length !== 1 ? 's' : ''}`;
+
+  if (rows.length === 0) {
+    document.getElementById('table-body').innerHTML = `
+      <tr><td colspan="13">
+        <div class="empty-state">
+          <i class="ti ti-mail-off"></i>
+          <p>No campaigns yet. Add one above.</p>
+        </div>
+      </td></tr>`;
+    return;
+  }
+
+  document.getElementById('table-body').innerHTML = rows.map(c => {
+    const op = pct(c.opens, c.delivered);
+    const ctr = pct(c.clicks, c.opens);
+    const rep = pct(c.replies, c.delivered);
+    return `<tr>
+      <td>
+        <div class="campaign-name">${c.name}</div>
+      </td>
+      <td><span class="badge badge-${c.status}">${c.status}</span></td>
+      <td class="val val-dim">${fmtNum(c.sent)}</td>
+      <td class="val val-dim">${fmtNum(c.delivered)}</td>
+      <td class="val val-dim">${c.opens.toLocaleString()}</td>
+      <td class="val ${colorVal(op, 30, 60)}">${op.toFixed(1)}%</td>
+      <td class="val val-dim">${c.clicks.toLocaleString()}</td>
+      <td class="val ${colorVal(ctr, 5, 20)}">${ctr.toFixed(1)}%</td>
+      <td class="val val-dim">${c.replies}</td>
+      <td class="val ${colorVal(rep, 0.5, 2)}">${rep.toFixed(1)}%</td>
+      <td class="val ${c.conv > 0 ? 'val-good' : 'val-dim'}">${c.conv}</td>
+      <td class="val ${c.unsub > 10 ? 'val-warn' : 'val-dim'}">${c.unsub}</td>
+      <td>
+        <div class="row-actions">
+          <button class="icon-btn" onclick="editCampaign(${c.id})" title="Edit"><i class="ti ti-edit"></i></button>
+          <button class="icon-btn" onclick="deleteCampaign(${c.id})" title="Delete"><i class="ti ti-trash"></i></button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderCharts() {
+  const rows = filtered();
+  const labels = rows.map(c => c.name.length > 14 ? c.name.slice(0,14)+'…' : c.name);
+  const openData = rows.map(c => parseFloat(pct(c.opens, c.delivered).toFixed(1)));
+  const ctrData = rows.map(c => parseFloat(pct(c.clicks, c.opens).toFixed(1)));
+  const convData = rows.map(c => c.conv);
+  const unsubData = rows.map(c => c.unsub);
+
+  const chartDefaults = {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { backgroundColor: '#1e1e1e', borderColor: 'rgba(255,255,255,.1)', borderWidth: 0.5, titleColor: '#888', bodyColor: '#f0f0f0', padding: 10 } },
+    scales: {
+      x: { ticks: { font: { size: 10 }, color: '#555' }, grid: { display: false }, border: { display: false } },
+      y: { ticks: { font: { size: 10 }, color: '#555' }, grid: { color: 'rgba(255,255,255,.04)' }, border: { display: false } }
+    }
+  };
+
+  const ctx1 = document.getElementById('chart1').getContext('2d');
+  if (chart1Inst) chart1Inst.destroy();
+  chart1Inst = new Chart(ctx1, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Open %', data: openData, backgroundColor: '#00e5a0', borderRadius: 3, barPercentage: .45 },
+        { label: 'CTR', data: ctrData, backgroundColor: '#378ADD', borderRadius: 3, barPercentage: .45 }
+      ]
+    },
+    options: { ...chartDefaults, plugins: { ...chartDefaults.plugins, tooltip: { ...chartDefaults.plugins.tooltip, callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%` } } } }
+  });
+
+  const ctx2 = document.getElementById('chart2').getContext('2d');
+  if (chart2Inst) chart2Inst.destroy();
+  chart2Inst = new Chart(ctx2, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Conv', data: convData, backgroundColor: '#1D9E75', borderRadius: 3, barPercentage: .45 },
+        { label: 'Unsub', data: unsubData, backgroundColor: '#E24B4A', borderRadius: 3, barPercentage: .45 }
+      ]
+    },
+    options: chartDefaults
+  });
+}
+
+function render() {
+  renderSummary();
+  renderTable();
+  renderCharts();
+  updateFooter(campaigns);
+}
+
+function openModal(id = null) {
+  editId = id;
+  const fields = ['f-name','f-sent','f-delivered','f-opens','f-clicks','f-replies','f-conv','f-unsub'];
+  if (id) {
+    const c = campaigns.find(x => x.id === id);
+    document.getElementById('modal-title').textContent = 'Edit campaign';
+    document.getElementById('f-name').value = c.name;
+    document.getElementById('f-status').value = c.status;
+    document.getElementById('f-channel').value = c.channel || 'email';
+    ['sent','delivered','opens','clicks','replies','conv','unsub'].forEach(k => {
+      document.getElementById('f-'+k).value = c[k];
+    });
+  } else {
+    document.getElementById('modal-title').textContent = 'Add campaign';
+    fields.forEach(id => document.getElementById(id).value = '');
+    document.getElementById('f-status').value = 'active';
+    document.getElementById('f-channel').value = currentView;
+  }
+  document.getElementById('modal').classList.add('open');
+  document.getElementById('f-name').focus();
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+
+function handleModalBgClick(e) {
+  if (e.target === document.getElementById('modal')) closeModal();
+}
+
+function saveCampaign() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { document.getElementById('f-name').focus(); return; }
+  const data = {
+    name,
+    status: document.getElementById('f-status').value,
+    channel: document.getElementById('f-channel').value,
+    sent: parseInt(document.getElementById('f-sent').value) || 0,
+    delivered: parseInt(document.getElementById('f-delivered').value) || 0,
+    opens: parseInt(document.getElementById('f-opens').value) || 0,
+    clicks: parseInt(document.getElementById('f-clicks').value) || 0,
+    replies: parseInt(document.getElementById('f-replies').value) || 0,
+    conv: parseInt(document.getElementById('f-conv').value) || 0,
+    unsub: parseInt(document.getElementById('f-unsub').value) || 0,
+  };
+  if (editId) {
+    const idx = campaigns.findIndex(c => c.id === editId);
+    campaigns[idx] = { ...campaigns[idx], ...data };
+  } else {
+    campaigns.push({ id: Date.now(), ...data });
+  }
+  save(campaigns);
+  closeModal();
+  render();
+}
+
+function editCampaign(id) { openModal(id); }
+
+function deleteCampaign(id) {
+  if (!confirm('Remove this campaign?')) return;
+  campaigns = campaigns.filter(c => c.id !== id);
+  save(campaigns);
+  render();
+}
+
+function exportCSV() {
+  const headers = ['Campaign','Channel','Status','Sent','Delivered','Opens','Open%','Clicks','CTR','Replies','Reply%','Conv','Unsub'];
+  const rows = campaigns.map(c => [
+    `"${c.name}"`, c.channel, c.status, c.sent, c.delivered, c.opens,
+    pct(c.opens, c.delivered).toFixed(1)+'%', c.clicks,
+    pct(c.clicks, c.opens).toFixed(1)+'%', c.replies,
+    pct(c.replies, c.delivered).toFixed(1)+'%', c.conv, c.unsub
+  ]);
+  const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'ipl_campaigns.csv';
+  a.click();
+}
+
+render();
+</script>
+</body>
+</html>
+
